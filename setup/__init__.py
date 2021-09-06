@@ -1,0 +1,1 @@
+from setup.setapp import app
