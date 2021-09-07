@@ -7,5 +7,5 @@ setup(
     packages=['pixiv'],
     include_package_data=True,
     zip_safe=False,
-    install_requires=['Flask', 'SQLAlchemy']
+    install_requires=['Flask', 'SQLAlchemy', 'Flask-Mail']
 )
