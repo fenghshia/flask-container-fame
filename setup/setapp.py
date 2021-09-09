@@ -1,5 +1,6 @@
 from flask import Flask
-# from config.config import uri
+from config.base import fcf_database
+from config.huobi import huobi_database
 from util.email import Email
 from flask_sqlalchemy import SQLAlchemy
 from flask_apscheduler import APScheduler
@@ -10,7 +11,10 @@ from config.base import email_code
 # 配置信息
 class config:
     SCHEDULER_API_ENABLED = True  # 定时任务启用
-    # SQLALCHEMY_DATABASE_URI = uri  # 数据库地址
+    SQLALCHEMY_DATABASE_URI = fcf_database  # fcf框架地址
+    SQLALCHEMY_BINDS = {
+        "huobi": huobi_database  # huobi数据库地址
+    }
     SQLALCHEMY_POOL_SIZE = 50  # 数据库连接池大小
 
 def errorlisten(event):
@@ -26,7 +30,7 @@ app.config.from_object(config())
 # 邮件
 mail = Email()
 # 数据库
-# db = SQLAlchemy(app)
+db = SQLAlchemy(app)
 # 定时任务
 scheduler = APScheduler()
 scheduler.init_app(app)

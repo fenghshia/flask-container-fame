@@ -1,1 +1,1 @@
-from setup.setapp import app
+from setup.setapp import app, db

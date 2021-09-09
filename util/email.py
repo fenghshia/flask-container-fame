@@ -19,7 +19,7 @@ class Email:
 
     def __init__(self):
         configer = Config()
-        self.receiver = configer.read("EmailReceiver")
+        self.receiver = configer.read("base", "EmailReceiver")
 
     def send(self, msg, receiver=None):
         if not receiver:
