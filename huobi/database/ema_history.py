@@ -1,11 +1,4 @@
-from service.set_app import db
-
-
-Model = db.Model
-Column = db.Column
-DateTime = db.DateTime
-DECIMAL = db.DECIMAL
-Boolean = db.Boolean
+from huobi.database import *
 
 
 class EmaHistory(Model):

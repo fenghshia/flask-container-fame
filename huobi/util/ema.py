@@ -2,7 +2,7 @@ from decimal import Decimal, ROUND_HALF_UP
 from datetime import datetime, timedelta
 from threading import Lock
 from setup import db
-from huobi import EmaHistory
+from huobi import EmaHistory, params
 
 
 class Ema:
@@ -28,11 +28,11 @@ class Ema:
     def __ema(self, price, last_ema):
         # 四舍五入算法
         return (self.α * price + (Decimal("1.0") - self.α) * last_ema).quantize(self.precision, ROUND_HALF_UP)
-    
+
     # dema算法
     def __dema(self, ema1, ema2):
         return (Decimal("2.0") * ema1 - ema2).quantize(self.precision, ROUND_HALF_UP)
-    
+
     # tema算法
     def __tema(self, ema1, ema2, ema3):
         return (Decimal("3.0") * (ema1 - ema2) + ema3).quantize(self.precision, ROUND_HALF_UP)
@@ -46,12 +46,9 @@ class Ema:
         return (Decimal(tema) - Decimal("3.0") * (Decimal(ema1) - Decimal(ema2))).quantize(self.precision, ROUND_HALF_UP)
 
     # 三重ema算法
-    def triple_ema(self, last_price, now_price, now):
-        '''
-        param: price为列表, 其中存放两个参数, 第一个是前一小时的收盘价格, 第二个是当前的实时价格
-        '''
-        # 当前时间的前一个小时
-        last_time = self.__round_hour(now + timedelta(hours = -1))
+    def triple_ema(self, last_price, now_price):
+        # 获取上一指标的时间
+        last_time = self.__round_time()
         last_ema = EmaHistory.query.filter(EmaHistory.date == last_time).all()
         # 空数据补充
         if not last_ema:
@@ -75,7 +72,7 @@ class Ema:
             "pre": {"ema": pre_ema1,
                     "tema": self.__tema(pre_ema1, pre_ema2, pre_ema3)}
         }
-    
+
     # 上一个小事数据补齐
     def __replenish(self, time: datetime, price: str):
         '''
@@ -83,9 +80,8 @@ class Ema:
         写入数据库: date, ema1, ema2, ema3, dema, tema, price, correct
         '''
         # 查询补齐时间的前一条数据
-        last_time = time + timedelta(hours=-1)
+        last_time = time + timedelta(hours=-4)
         last_ema = EmaHistory.query.filter(EmaHistory.date == last_time).all()[0]
-        # db.session.close()
         # 前两小事ema1算出前一小时ema1
         ema1 = self.__ema(Decimal(price), last_ema.ema1)
         # 前两小事ema2算出前一小时ema2
@@ -98,7 +94,6 @@ class Ema:
         tema = self.__tema(ema1, ema2, ema3)
         db.session.add(EmaHistory(date=time, ema1=ema1, ema2=ema2, ema3=ema3, dema=dema, tema=tema, price=price, correct=False))
         db.session.commit()
-        # db.session.close()
 
     # 外部数据矫正
     def revers_supplement(self, date: datetime, ema1: str, dema: str, tema: str):
@@ -112,7 +107,6 @@ class Ema:
         ema3 = self.__revers_tema(ema1, ema2, tema)
         # 查询是否有数据
         res = EmaHistory.query.filter(EmaHistory.date == date).all()
-        # db.session.close()
         if res:
             EmaHistory.query.filter(EmaHistory.date == date).update(
                 {"ema1": ema1, "ema2": ema2, "ema3": ema3, "dema": dema, "tema": tema, "correct": True}
@@ -121,8 +115,22 @@ class Ema:
         else:
             db.session.add(EmaHistory(date=date, ema1=ema1, ema2=ema2, ema3=ema3, dema=dema, tema=tema, correct=True))
         db.session.commit()
-        # db.session.close()
 
-    # 时间取整函数: 精确度(小时)
-    def __round_hour(self, time):
-        return datetime(time.year, time.month, time.day, time.hour)
+    # 时间取整函数: 精确度(小时), 4小时k线取整
+    def __round_time(self, time=None):
+        if not time:
+            time = params.market_date + timedelta(hours=-4)
+        market_hour = time.hour
+        if 0 <= market_hour < 4:
+            last_hour = 0
+        elif 4 <= market_hour < 8:
+            last_hour = 4
+        elif 8 <= market_hour < 12:
+            last_hour = 8
+        elif 12 <= market_hour < 16:
+            last_hour = 12
+        elif 16 <= market_hour < 20:
+            last_hour = 16
+        elif 20 <= market_hour < 24:
+            last_hour = 20
+        return datetime(time.year, time.month, time.day, last_hour)

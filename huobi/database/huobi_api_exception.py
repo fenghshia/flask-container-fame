@@ -1,12 +1,4 @@
-from service.set_app import db
-
-
-Model = db.Model
-Column = db.Column
-DateTime = db.DateTime
-Integer = db.Integer
-Boolean = db.Boolean
-String = db.String
+from huobi.database import *
 
 
 # 此表用于记录接口异常的详细信息
