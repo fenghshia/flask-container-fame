@@ -1,8 +1,8 @@
+from setup import db
+from huobi import EmaHistory, params
 from decimal import Decimal, ROUND_HALF_UP
 from datetime import datetime, timedelta
 from threading import Lock
-from setup import db
-from huobi import EmaHistory, params
 
 
 class Ema:
@@ -101,7 +101,7 @@ class Ema:
         传入: date, ema1, dema, tema
         写入数据库: date, ema1, ema2, ema3, dema, tema, correct
         '''
-        date = self.__round_hour(date)
+        date = self.__round_time(date)
         # 补算数据
         ema2 = self.__revers_dema(ema1, dema)
         ema3 = self.__revers_tema(ema1, ema2, tema)

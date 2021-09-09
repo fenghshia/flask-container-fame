@@ -1,12 +1,12 @@
 
 from setup import db
-from huobi import Sign
-from huobi import HuobiApiExceptionDetailLog
 from requests import session
 from datetime import datetime
 from config.base import proxy
 from config.huobi import url_timeout
+from huobi.api.base import HuobiApiExceptionDetailLog
 from urllib3.exceptions import MaxRetryError
+from huobi.api.base.sign import Sign
 from requests.exceptions import Timeout
 from requests.exceptions import ConnectionError
 

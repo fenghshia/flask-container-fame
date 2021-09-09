@@ -1,8 +1,8 @@
 from setup import db
+from huobi import BaseApi
 from huobi import HuobiApiExceptionDetailLog
 from datetime import datetime
 from threading import Lock
-from huobi import BaseApi
 
 
 class Market(BaseApi):

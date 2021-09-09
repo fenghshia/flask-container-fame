@@ -7,5 +7,11 @@ setup(
     packages=['pixiv'],
     include_package_data=True,
     zip_safe=False,
-    install_requires=['Flask', 'SQLAlchemy', 'Flask-Mail']
+    install_requires=['Flask', 'SQLAlchemy', 'Flask-SQLAlchemy', 'Flask-APScheduler', 'requests', 'pymysql', 'Flask-MySQLdb']
 )
+
+from huobi import *
+from setup import *
+
+
+db.create_all()
