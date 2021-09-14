@@ -1,8 +1,9 @@
 from setup import db
-from huobi import EmaHistory, params
 from decimal import Decimal, ROUND_HALF_UP
 from datetime import datetime, timedelta
 from threading import Lock
+from huobi.util.params import Params
+from huobi.database.ema_history import *
 
 
 class Ema:
@@ -22,6 +23,7 @@ class Ema:
             self.α = Decimal('0.2')
             # ema取值精度, 小数点后2位
             self.precision = Decimal("0.00")
+            self.param = Params()
             self.init_flag = True
 
     # ema算法
@@ -47,6 +49,8 @@ class Ema:
 
     # 三重ema算法
     def triple_ema(self, last_price, now_price):
+        last_price = str(last_price)
+        now_price = str(now_price)
         # 获取上一指标的时间
         last_time = self.__round_time()
         last_ema = EmaHistory.query.filter(EmaHistory.date == last_time).all()
@@ -119,7 +123,7 @@ class Ema:
     # 时间取整函数: 精确度(小时), 4小时k线取整
     def __round_time(self, time=None):
         if not time:
-            time = params.market_date + timedelta(hours=-4)
+            time = self.param.market_date + timedelta(hours=-4)
         market_hour = time.hour
         if 0 <= market_hour < 4:
             last_hour = 0

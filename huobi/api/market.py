@@ -1,8 +1,8 @@
 from setup import db
-from huobi import BaseApi
-from huobi import HuobiApiExceptionDetailLog
 from datetime import datetime
 from threading import Lock
+from huobi.api import HuobiApiExceptionDetailLog
+from huobi.api.base.base import BaseApi
 
 
 class Market(BaseApi):
@@ -43,6 +43,17 @@ class Market(BaseApi):
                     url=self.url,
                     date=datetime.fromtimestamp(res["ts"]/1000),  # 记录市场时间
                     exptype="data error",
+                    data=str(res),
+                    notify=False
+                )
+                db.session.add(exp)
+                db.session.commit()
+                return 400
+            if len(data) < 25:
+                exp = HuobiApiExceptionDetailLog(
+                    url=self.url,
+                    date=datetime.fromtimestamp(res["ts"]/1000),  # 记录市场时间
+                    exptype="lenth litter 25",
                     data=str(res),
                     notify=False
                 )

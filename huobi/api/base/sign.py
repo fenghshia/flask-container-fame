@@ -1,10 +1,10 @@
 import json
 import hmac
 import base64
+from config import *
 from urllib import parse
 from hashlib import sha256
 from datetime import datetime
-from config.huobi import api_code
 
 
 class Sign:

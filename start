@@ -1,0 +1,16 @@
+case "$1" in
+    start)
+        `nohup python3.8 main.py >> flask.log 2>&1 &`
+        ;;
+    stop)
+        `nohup ps aux | grep main.py | awk '{print $2}' | xargs kill -9 2>&1 &`
+        ;;
+    restart)
+        $0 stop
+        $0 start
+        ;;
+    *)
+        echo "usage: $0 {start|stop|restart}"
+        exit 1
+        ;;
+esac

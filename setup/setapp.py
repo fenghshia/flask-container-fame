@@ -1,11 +1,9 @@
 from flask import Flask
-from config.base import fcf_database
-from config.huobi import huobi_database
+from config import *
 from util.email import Email
 from flask_sqlalchemy import SQLAlchemy
 from flask_apscheduler import APScheduler
 from apscheduler.events import EVENT_JOB_ERROR
-from config.base import email_code
 
 
 # 配置信息
@@ -22,7 +20,7 @@ def errorlisten(event):
     msg += f"type: {type(event.exception)}\n"
     msg += f"错误信息: {event.traceback}"
     mail.send(msg)
-    # db.session.rollback()
+    db.session.rollback()
 
 app = Flask(__name__)
 # 配置读取

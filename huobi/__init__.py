@@ -1,11 +1,8 @@
 # 公用参数
 from huobi.util.params import Params
-# api
-from huobi.api.base.base import *
+# 定时任务
+from huobi.scheduler import *
 # 数据库
-from huobi.database import Model
+from huobi.database.position import *
 from huobi.database.ema_history import *
 from huobi.database.huobi_api_exception import *
-
-
-params = Params()

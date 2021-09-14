@@ -1,1 +1,1 @@
-from setup.setapp import app, db
+from setup.setapp import app, db, scheduler

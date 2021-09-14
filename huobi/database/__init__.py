@@ -2,6 +2,7 @@ from setup import db
 
 
 Model = db.Model
+Float = db.Float
 Column = db.Column
 String = db.String
 Boolean = db.Boolean

@@ -1,8 +1,7 @@
 import smtplib
+from config import *
 from threading import Lock
 from email.utils import formataddr
-from config.base import Config
-from config.base import email_code, subtitle
 from email.header import Header
 from email.mime.text import MIMEText
 
